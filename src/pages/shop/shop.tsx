@@ -1,10 +1,10 @@
 import React from 'react'
-import {ShopData} from "./shop.data";
-import CollectionPreview from "../../components/collection-preview/collection-preview";
+import {Collection, ShopData} from "./shop.data";
+import CollectionPreview from "../../components/collection-preview/collection-previewt";
 
-class ShopPage extends React.Component {
-    constructor() {
-        super();
+class ShopPage extends React.Component<{}, {collections: Collection[]}> {
+    constructor(props) {
+        super(props);
 
         this.state = {
             collections: ShopData

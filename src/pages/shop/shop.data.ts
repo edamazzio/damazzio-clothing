@@ -1,4 +1,18 @@
-export const ShopData = [
+export interface ShopItem {
+    id: number
+    name: string,
+    imageUrl: string,
+    price: number
+}
+
+export interface Collection {
+    id: number,
+    title: string,
+    routeName: string,
+    items: ShopItem[]
+}
+
+export const ShopData: Collection[] = [
     {
         id: 1,
         title: 'Hats',
