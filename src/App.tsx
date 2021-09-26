@@ -9,25 +9,23 @@ import {auth, createUserProfileDocument} from "./firebase/utils";
 import { onAuthStateChanged, Unsubscribe } from "firebase/auth";
 import { onSnapshot } from "firebase/firestore"
 import { IUser } from "./interfaces/Users";
+import {connect, ConnectedProps} from 'react-redux'
+import {setCurrentUser} from "./redux/user/user-actions";
 
-
-class App extends React.Component<{},{currentUser: IUser|null}> {
-  constructor(props) {
-    super(props);
-      this.state = {
-          currentUser: null
-      }
-  }
+class App extends React.Component<PropsType, {}> {
 
   unsubscribeFromAuth: Unsubscribe
 
   componentDidMount(){
+
+      const {setCurrentUser} = this.props
+
       this.unsubscribeFromAuth = onAuthStateChanged(auth, async (userAuth) => {
           if (userAuth){
             const userRef = await createUserProfileDocument(userAuth);
             if (userRef){
                 onSnapshot(userRef, (snapshot) => {
-                    this.setState({
+                    setCurrentUser({
                         currentUser: {
                             id: snapshot.id.toString(),
                             ...snapshot.data()
@@ -37,7 +35,7 @@ class App extends React.Component<{},{currentUser: IUser|null}> {
                 return;
             }
           }
-          this.setState({currentUser: null})
+          setCurrentUser(userAuth);
       })
   }
 
@@ -49,7 +47,7 @@ class App extends React.Component<{},{currentUser: IUser|null}> {
     render(){
     return (
         <div>
-          <Header currentUser={this.state.currentUser}/>
+          <Header />
           <Switch>
             <Route exact path='/' component={Homepage}/>
             <Route path='/shop' component={ShopPage}/>
@@ -60,4 +58,12 @@ class App extends React.Component<{},{currentUser: IUser|null}> {
   }
 }
 
-export default App;
+const mapDispatchToProps = dispatch => ({
+    setCurrentUser: user => dispatch(setCurrentUser(user))
+})
+
+const connector = connect(null, mapDispatchToProps);
+
+type PropsType = ConnectedProps<typeof connector>
+
+export default connector(App);
